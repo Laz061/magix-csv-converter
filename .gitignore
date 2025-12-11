@@ -1,0 +1,31 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Secrets - Do not commit this file
+.streamlit/secrets.toml
+*.env
+
+# Data and output files
+*.csv
+*.json
+
+# Build artifacts
+dist/
+build/
+*.egg-info
