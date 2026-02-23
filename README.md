@@ -13,23 +13,22 @@ A simple Streamlit web application to extract and clean customer contact informa
 
 ## Setup and Installation
 
-To run this application locally, you'll need Python installed.
+To run this application locally, you'll need [uv](https://docs.astral.sh/uv/) installed.
 
 1.  **Clone the repository or download the files.**
 
-2.  **Install the required packages:**
-    A `requirements.txt` file is included. Install the dependencies using pip:
+2.  **Create a virtual environment and install dependencies:**
     ```sh
-    pip install -r requirements.txt
+    uv sync
     ```
 
 ## How to Use
 
 1.  **Run the Streamlit app:**
-    Open your terminal, navigate to the project directory, and run the following command:
+    Open your terminal, navigate to the project directory, and run:
 
     ```sh
-    streamlit run extract.py
+    uv run streamlit run extract.py
     ```
 
 2.  **Use the Web Interface:**

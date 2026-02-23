@@ -1,0 +1,10 @@
+[project]
+name = "customer-data-extractor"
+version = "0.1.0"
+description = "Extract and clean customer contact information from CSV files"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit",
+    "pandas",
+]

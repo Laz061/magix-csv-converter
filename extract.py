@@ -4,49 +4,53 @@ import pandas as pd
 def process_csv(input_file):
     """
     Processes the uploaded CSV file to extract records.
+    Supports both formats:
+    - Multi-row: Registration, Driver Email, Mobile appear in different rows/columns
+    - Single-row: All key-value pairs in columns 2-7 of one row
     """
-    # Load the file without a header from the uploaded file object
     df = pd.read_csv(input_file, header=None)
-
-    # Rename the relevant columns for clarity
-    df.rename(columns={2: 'Key1', 3: 'Value1', 4: 'Key2', 5: 'Value2', 6: 'Key3', 7: 'Value3'}, inplace=True)
 
     extracted_records = []
     current_record = {}
 
     for index, row in df.iterrows():
-        # 1. Check for the start of a new record (Row with 'Registration')
-        if row.get('Key1') == 'Registration':
-            # If we have an existing record with an email, save it
-            if current_record:
-                extracted_records.append({
-                    'Registration': current_record.get('Registration'),
-                    'Email': current_record.get('Driver Email'),
-                    'Mobile': current_record.get('Mobile')
-                })
-            # Start a new record dictionary
-            current_record = {}
+        row_values = row.tolist()
 
-        # 2. Extract Key-Value pairs across the row
-        if pd.notna(row.get('Key1')) and row.get('Key1') == 'Registration':
-            current_record[row['Key1']] = row['Value1']
+        for i in range(len(row_values) - 1):
+            key = row_values[i]
+            value = row_values[i + 1]
 
-        if pd.notna(row.get('Key2')) and row.get('Key2') == 'Driver Email':
-            current_record[row['Key2']] = row['Value2']
+            if pd.isna(key) or pd.isna(value):
+                continue
 
-        if pd.notna(row.get('Key3')) and row.get('Key3') == 'Mobile':
-            current_record[row['Key3']] = row['Value3']
+            key = str(key).strip()
+            value = str(value).strip() if not pd.isna(value) else ""
 
-    # 3. Add the final record after the loop finishes, if it has an email
-    if current_record:
+            if key == "Registration":
+                if current_record and current_record.get("Driver Email"):
+                    extracted_records.append({
+                        "Registration": current_record.get("Registration"),
+                        "Email": current_record.get("Driver Email"),
+                        "Mobile": current_record.get("Mobile"),
+                    })
+                current_record = {"Registration": value, "Driver Email": None, "Mobile": None}
+
+            elif key == "Driver Email" and current_record:
+                current_record["Driver Email"] = value
+
+            elif key == "Mobile" and current_record:
+                current_record["Mobile"] = value
+
+    if current_record and current_record.get("Driver Email"):
         extracted_records.append({
-            'Registration': current_record.get('Registration'),
-            'Email': current_record.get('Driver Email'),
-            'Mobile': current_record.get('Mobile')
+            "Registration": current_record.get("Registration"),
+            "Email": current_record.get("Driver Email"),
+            "Mobile": current_record.get("Mobile"),
         })
-    
+
     output_df = pd.DataFrame(extracted_records)
-    output_df.dropna(subset=['Email'], inplace=True)
+    if not output_df.empty and "Email" in output_df.columns:
+        output_df.dropna(subset=["Email"], inplace=True)
     return output_df
 
 # --- Streamlit User Interface ---
